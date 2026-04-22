@@ -1,0 +1,66 @@
+#include<iostream>
+#include<cstdio>
+
+#include<map>
+#include<vector>
+#include<algorithm>
+#include<functional>
+
+
+using namespace std;
+
+struct node {
+    public: 
+        node *left, *right;
+        int val;
+        node(): left(NULL), right(NULL) {}
+};
+    
+int main() {
+    int n; cin >> n;
+    vector<int> a;
+    int t;
+    auto wbit = [](int x) -> int {
+        int cnt = 0;
+        while(x) {
+            cnt++;
+            x >>= 1;
+        }
+        return cnt;
+    };
+    int w = 0;
+    for(int i = 0; i < n; i++) {
+        cin >> t;
+        a.push_back(t);
+        w = max(w, wbit(t));
+    }
+    node* root = new node();
+    function<void(node *, int, int)> append = [&append](node *x, int v, int k) {
+        if (k == -1) return;
+        if ((v>>k)&1) {
+            if (!x->right) {
+                x->right = new node();
+            }
+            append(x->right, v, k-1);
+            return;
+        }
+        if (!x->left) {
+            x->left = new node();
+        }
+        append(x->left, v, k-1);
+        return;
+    };
+    
+    for(auto it = a.begin(); it != a.end(); it++) {
+        append(root, *it, w-1);
+    }
+    int ans = 0;
+    for(auto it = a.begin(); it != a.end(); it++) {
+        int p = 0;
+        for(int i = w - 1; i >= 0; i--) {
+            
+        }
+    }
+
+    return 0;
+}

@@ -1,0 +1,44 @@
+--control.lua
+local builer = require('test/loader')
+--
+--script.on_event(defines.events.on_player_changed_position,
+--  function(event)
+--    local player = game.get_player(event.player_index) -- get the player that moved            
+--    -- log(serpent.block(player))
+--    -- if they're currently controlling the character
+--    if player.controller_type == defines.controllers.character then
+--      -- and wearing our armor
+--      if player.get_inventory(defines.inventory.character_armor).get_item_count("fire-armor") >= 1 then
+--        -- create the fire where they're standing
+--        player.surface.create_entity{name="fire-flame", position=player.position, force="neutral"}
+--      end
+--    end
+--  end
+--)
+--
+--script.on_event(defines.events.on_console_command, function (event) 
+--  local player = event.player_index
+--  local command = event.command
+--  if not command == 'cc' then 
+--    return
+--  end
+--  local ctx = builer.BuildContext(event)
+--  builer.Construction(ctx)
+--  
+--end)
+--
+--script.on_event(defines.events.on_gui_opened, function (event)
+--  local player = game.get_player(event.player_index)
+--  local entity = player.selected
+--  if not entity  then return end
+--  if not entity.name == 'constant-combinator' then return end
+--  local  cn_red = entity.get_circuit_network(defines.wire_connector_id.circuit_red)
+--  local  cn_green = entity.get_circuit_network(defines.wire_connector_id.circuit_green)
+--  log(cn_red)
+--  log(cn_green)
+--  
+--end)
+--script.on_event(defines.events.on_tick, function (event)
+--  
+--  
+--end)
