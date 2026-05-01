@@ -6,7 +6,12 @@
 #include <stdbool.h>
 #include <assert.h>
 
-void print_iarray(char *prefix, int *a, int n) {
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define abs(a) ((a) > 0 ? (a) : -(a))
+
+void print_iarray(char *prefix, int *a, int n)
+{
 	int m = 1000;
 	char buf[m]; 
 	char *s = buf;
@@ -23,13 +28,45 @@ void print_iarray(char *prefix, int *a, int n) {
 	printf("%s-[%s]\n", prefix, s);
 }
 
-int abs(int a) { if (a >= 0) return a;  return -a; }
-int comparator(const void *a, const void *b) { return *(int *)a - *(int *)b; }
-// https://codeforces.com/problemset/problem/2111/C
-// https://onlinejudge.org/external/4/p455.pdf
-// https://codeforces.com/problemset/problem/2106/C
 
-int main() {
-    
+int comparator(const void *a, const void *b) { return *(int *)a - *(int *)b; }
+
+/**
+ * [R] https://onlinejudge.org/external/4/p455.pdf 
+ * [P] https://codeforces.com/problemset/problem/2106/C
+ * [P] https://codeforces.com/problemset/problem/2111/C
+*/
+
+void solve() 
+{
+    int len;
+    scanf("%d", &len);
+    int a[len];
+    for(int i = 0; i < len; i++) 
+    {
+        scanf("%d", a+i);
+    }
+    int cost = 1E9;
+    int first = a[0];
+    int last = a[len-1];
+    int i;
+    int l[len];
+    int r[len];
+   
+    for(i = 0; i < 0; i++) 
+    {
+        int h;
+        for(int h = i-1; h >= 0 ; i--);
+    }
 }
+
+int main() 
+{
+    int n;
+    scanf("%d", &n);
+    for(int i = 0; i < n; i++)
+        solve();
+    return 0;
+}
+
 

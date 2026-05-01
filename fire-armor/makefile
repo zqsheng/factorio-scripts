@@ -1,52 +1,41 @@
-exec: algocc
+run: build_algocl
 		cat 0 | ./a.exe
 
-algocl: 
-		gcc ./algo.c -std=c99
+build_algocl: 
+		gcc -oa.exe -std=c99 ./algo.c
 
-algogo:
+build_algogo:
 		cat 0 | go run ./algo.go
-algocpp_seam:
+
+build_algocpp_seam:
 	g++ -o a.exe ./sema.cpp -Wall -std=c++20
 
-algocc:
+build_algocc:
 	 g++ -o a.exe ./algo.cc -Wall -std=c++20
 	
-algojava:
+build_algojava:
 	javac Algo.java && java Algo.class
 	
-fibanocci_heap:
+build_fibanocci_heap:
 	gcc ./fibanocci_heap.c -std=c99
 
 
-run: keyrecorder
+build_build_keyrecorder: keyrecorder
 	cat 0 | ./app.exe
 	
-keyrecorder:
+build_keyrecorder:
 	g++ -oapp -m64 keyrecorder.cpp
 
 
-
-
-
-
-
-
-
-pixel:
+build_pixel:
 	g++ -opixel -I C:///Users/zqshe/olcPixelGameEngine/  pixel.cpp
 
 
-
-
-
-
-
-geometry:
+build_geometry:
 	g++ -ogeometry -I C:///Users/zqshe/olcUTIL_Geometry2D/ geometry.cpp
 
 
-binary_indexed_tree:
+build_binary_indexed_tree:
 	gcc ./binary_indexed_tree.c
 
 

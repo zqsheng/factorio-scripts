@@ -1,4 +1,4 @@
-;;; 
+;;; Automatic recipe chagner
 
 emit m1 1[virtual-signal=signal-red,quality=normal]
 emit m1 1[virtual-signal=signal-red,quality=uncommon]

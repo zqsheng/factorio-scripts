@@ -1,0 +1,134 @@
+" vim configuration file
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+"Plugin 'fatih/vim-go' 
+"Plugin 'scrooloose/syntastic'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'majutsushi/tagbar'
+"Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'scrooloose/nerdtree'
+Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'skywind3000/asyncrun.vim'
+"Plugin 'vimwiki/wimwiki'
+Plugin 'vim-airline/vim-airline'
+Plugin 'joshdick/onedark.vim'
+Plugin 'godlygeek/tabular'
+Plugin 'elzr/vim-json'
+""" :CocInfo
+""" :CocInstall coc-clangd
+""" :CocInstall coc-go
+""" :CocInstall coc-java
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+
+call vundle#end()
+
+" source %
+" PluginInstall
+" PluginClean
+" 
+" resize +5                	   // Horizontal window resize
+" vertical resize +5   		   // Vertical   window resize
+" ctrl + w + {H, J, K, L}      // window move
+" 
+"
+" :Ex	// open file explorer
+" :Sex  // split windows and open file exploer
+" :f a  // window rename
+" :copen
+"
+nmap <F8> :TagbarToggle<CR>
+nmap <F4> :AsyncRun make<CR>
+nmap <F6> :AsyncStop<CR>
+nmap <F7> ggVG"*y<CR>
+"nmap <F4> :s/\<\|\>/`/<CR>  " todo
+nmap <F1> :AsyncRun .w !zsh <CR>
+
+autocmd InsertLeave * write
+autocmd FocusLost * if &mod | write | endif
+let g:asyncrun_open = 12
+
+
+set nocompatible   
+filetype on
+filetype plugin indent on  
+syntax on
+
+"colorscheme mymdscheme
+"colorscheme desert
+colorscheme corporation
+
+
+set ignorecase
+set encoding=utf-8
+set termencoding=utf-8
+
+set t_Co=256
+
+set showcmd
+set ruler
+
+let mapleader=","
+
+set nonu
+
+set autoindent
+set cursorline
+""set cursorcolumn
+
+set sw=4
+set ts=4
+set et
+
+" vim-markdown 推荐配置
+let g:vim_markdown_math = 1
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_strikethrough = 1
+let g:vim_markdown_folding_level = 2
+let g:vim_markdown_new_list_item_indent = 2
+let g:vim_markdown_no_extensions_in_markdown = 1
+let g:vim_markdown_autowrite = 1
+let g:vim_markdown_edit_url_in = 'tab'
+let g:vim_markdown_fenced_languages = ['bash=sh','python=python','javascript=javascript','json=json']
+
+" Conceal 设置
+set conceallevel=2
+let g:vim_markdown_conceal = 1
+let g:vim_markdown_conceal_code_blocks = 0
+let g:netrw_liststyle = 3
+
+" Set cursor shape and color
+if &term =~ "xterm"
+    " INSERT mode
+    let &t_SI = "\<Esc>[5 q" . "\<Esc>]12;blue\x7"
+    " REPLACE mode
+    let &t_SR = "\<Esc>[3 q" . "\<Esc>]12;black\x7"
+    " NORMAL mode
+    let &t_EI = "\<Esc>[1 q" . "\<Esc>]12;green\x7"
+endif
+" 1 -> blinking block  闪烁的方块
+" 2 -> solid block  不闪烁的方块
+" 3 -> blinking underscore  闪烁的下划线
+" 4 -> solid underscore  不闪烁的下划线
+" 5 -> blinking vertical bar  闪烁的竖线
+" 6 -> solid vertical bar  不闪烁的竖线
+
+" 使用 Tab 键触发补全
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr> <S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" 快捷键映射
+nmap <silent> gd <Plug>(coc-definition)    
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation) 
+nmap <silent> gr <Plug>(coc-references)      
+nmap <silent> K  :call CocAction('doHover')CR>  
+nmap <leader>rn <Plug>(coc-rename)        
+
+" 错误诊断跳转
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)

@@ -10,7 +10,6 @@ func solve() {
 		_, err := fmt.Scanf("%d", &n)
 		if err == nil { break }
 	}
-	
 	fmt.Println(n-1)
 }
 
@@ -20,7 +19,6 @@ func main() {
 	fmt.Scanf("%d", &tt)
 	for tt > 0 {
 		tt--
-		
 		solve()
 	}
 	
