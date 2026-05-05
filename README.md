@@ -6,5 +6,9 @@
 - fcpu
 - app
     - threejs
-
+# browser bookmarks
+- https://hellogithub.com/
+- codewars
+- cpprefereneces
+- https://plato.stanford.edu/entries/lambda-calculus/
 
