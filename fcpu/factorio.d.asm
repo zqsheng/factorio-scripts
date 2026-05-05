@@ -8,10 +8,6 @@
 ;; green wire: recipe
 ;; output    : quality
 
-;; configuratin
-mov r6 10
-
-;;
 
  
 mov r10 1[virtual-signal=signal-red,quality=normal]
@@ -47,25 +43,20 @@ xdiv m1 red m1
 ;; set output
 xmin r5 m1
 
-tlt r5 r6
-jmp :nextq
 
 teq cnm1 cng
 ssv r4 r5
 
-teq cnm1 cng
-mov out1 r4
+tlt cnm1 cng 
+ssv r4 0
 
-tgt r5 r6
-teq cnm1 cng
-jmp :done
+mov out@1 r4
 
-:nextq
+
 
 ;; loop0 for
 dec r1
 tgt r1 9
 jmp :loop0
 
-:done
 
