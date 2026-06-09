@@ -1,0 +1,55 @@
+;; Automatic recipe switcher - FIXED VERSION
+;;
+;; 64 general purpose registers (1-64)
+;; 4 memory channels for vector processing(1-4)
+;;
+;; red   wire: logistic network storage
+;; green wire: recipe
+;; output    : quality
+
+mov r10 1[virtual-signal=signal-red,quality=normal]
+mov r11 1[virtual-signal=signal-red,quality=uncommon]
+mov r12 1[virtual-signal=signal-red,quality=rare]
+mov r13 1[virtual-signal=signal-red,quality=epic]
+mov r14 1[virtual-signal=signal-red,quality=legendary]
+
+;; Quality tier loop (r1: 14=legendary down to 10=normal)
+mov r1 14
+:loop0
+
+;; Initialize memory with green wire recipe
+clr m1
+mov r2 1
+mov r5 99
+:loop1
+
+;; Copy signals from green wire to memory, set quality
+mov r3 green@2
+mov r4 r1
+ssq r3 r4
+emit m1 r3
+
+;; Loop through all green signals
+inc r2
+tgt r2 cng
+jmp :loop1
+
+;; Get minimum resource count from logistic network
+xdiv m1 red m1
+xmin r5 m1
+
+;; Check if we have minimum 5 of each resource
+tlt r5 5
+jmp :nextq
+
+;; Enough resources: output the quality signal and done
+mov out1 r4
+jmp :done
+
+;; Try next lower quality tier
+:nextq
+dec r1
+tgt r1 9
+jmp :loop0
+
+:done
