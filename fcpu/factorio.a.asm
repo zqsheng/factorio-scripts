@@ -27,7 +27,7 @@ tlt r2 r1
 mov r3 r2
 
 
-mov r4 1[virtual-signal=signal-red,quality=legendary
+mov r4 1[virtual-signal=signal-red,quality=legendary]
 swpv r3 r4
 tgt r4 100
 jmp :done
