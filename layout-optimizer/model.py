@@ -223,130 +223,6 @@ class BeltNetwork:
         )
 
 
-class GroundBeltType(Enum):
-    """Ground belt materials with movement speed, cost, and crossing width.
-
-    Movement speed multiplier:
-    - 1.0 = normal speed
-    - > 1.0 = faster movement
-
-    Maximum cross tile:
-    - Width in tiles that characters can cross on the ground belt
-    """
-
-    STONE = {"speed_multiplier": 1.0, "cost": 1, "maximum_cross_tile": 1}
-    CONCRETE = {"speed_multiplier": 1.15, "cost": 5, "maximum_cross_tile": 2}
-    REFINED_CONCRETE = {"speed_multiplier": 1.25, "cost": 10, "maximum_cross_tile": 3}
-    HAZARD_CONCRETE = {"speed_multiplier": 1.25, "cost": 12, "maximum_cross_tile": 3}
-
-    def __init__(self, properties: dict):
-        self.speed_multiplier = properties["speed_multiplier"]
-        self.cost_per_tile = properties["cost"]
-        self.maximum_cross_tile = properties["maximum_cross_tile"]
-
-    def __str__(self) -> str:
-        return self.name.lower().replace("_", " ")
-
-
-@dataclass
-class GroundBelt:
-    """Single ground belt tile with material and properties."""
-
-    position: Point
-    material: GroundBeltType = GroundBeltType.STONE
-    direction: Optional[Tuple[int, int]] = None
-
-    @property
-    def cost(self) -> int:
-        return self.material.cost_per_tile
-
-    @property
-    def speed_boost(self) -> float:
-        return self.material.speed_multiplier
-
-    @property
-    def maximum_cross_tile(self) -> int:
-        return self.material.maximum_cross_tile
-
-    def describe(self) -> str:
-        return (
-            f"GroundBelt({self.position}, material={self.material}, "
-            f"speed_boost={self.speed_boost:.2f}x, cost={self.cost}, "
-            f"max_cross={self.maximum_cross_tile}, direction={self.direction})"
-        )
-
-
-@dataclass
-class GroundBeltPath:
-    """Path of ground belts connecting two points."""
-
-    source: Point
-    target: Point
-    path: List[Point]
-    material: GroundBeltType = GroundBeltType.STONE
-
-    @property
-    def length(self) -> int:
-        return max(0, len(self.path) - 1)
-
-    @property
-    def total_cost(self) -> int:
-        return self.length * self.material.cost_per_tile
-
-    @property
-    def average_speed_multiplier(self) -> float:
-        return self.material.speed_multiplier
-
-    @property
-    def maximum_cross_tile(self) -> int:
-        return self.material.maximum_cross_tile
-
-    def describe(self) -> str:
-        return (
-            f"GroundBeltPath({self.source} -> {self.target}, material={self.material}, "
-            f"length={self.length}, speed_mult={self.average_speed_multiplier:.2f}x, "
-            f"max_cross={self.maximum_cross_tile}, total_cost={self.total_cost})"
-        )
-
-
-@dataclass
-class GroundBeltNetwork:
-    """Complete ground belt network analysis."""
-
-    paths: List[GroundBeltPath]
-
-    @property
-    def total_length(self) -> int:
-        return sum(path.length for path in self.paths)
-
-    @property
-    def total_cost(self) -> int:
-        return sum(path.total_cost for path in self.paths)
-
-    @property
-    def average_speed_multiplier(self) -> float:
-        if not self.paths:
-            return 1.0
-        total_mult = sum(
-            path.average_speed_multiplier * path.length for path in self.paths
-        )
-        return total_mult / self.total_length if self.total_length > 0 else 1.0
-
-    @property
-    def cost_per_tile(self) -> float:
-        if self.total_length == 0:
-            return 0.0
-        return self.total_cost / self.total_length
-
-    def summary(self) -> str:
-        return (
-            f"GroundBeltNetwork(total_length={self.total_length}, "
-            f"total_cost={self.total_cost}, "
-            f"avg_speed_mult={self.average_speed_multiplier:.2f}x, "
-            f"cost_per_tile={self.cost_per_tile:.1f})"
-        )
-
-
 class UndergroundBeltType(Enum):
     """Underground belt types for Factorio.
 
@@ -519,7 +395,7 @@ class LabType(Enum):
         "energy_consumption_kw": 300.0,
         "module_slots": 4,
         "cost": 100,  # Representative cost
-        "dimensions": (3, 3),
+        "dimensions": (5, 5),
     }
 
     def __init__(self, properties: dict):

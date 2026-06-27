@@ -51,26 +51,6 @@ Underground belts allow transport belts to cross beneath other belts.
 - Speed same as corresponding belt type
 - Path validation ensures distance constraints are met
 
-### Ground Belt Types
-
-Ground belts are infrastructure tiles that characters walk on. Different materials provide movement speed bonuses:
-
-| Material | Speed Multiplier | Cost/Tile | Max Cross Width | Effect |
-|----------|-----------------|-----------|-----------------|--------|
-| Stone | 1.00x | 1 | 1 tile | Normal movement |
-| Concrete | 1.15x | 5 | 2 tiles | +15% faster |
-| Refined Concrete | 1.25x | 10 | 3 tiles | +25% faster |
-| Hazard Concrete | 1.25x | 12 | 3 tiles | +25% faster (visual warning) |
-
-**Ground Belt Model:**
-- `speed_multiplier`: character movement speed bonus
-- `cost_per_tile`: construction resources required
-- `maximum_cross_tile`: width characters can cross
-- `length`: number of tiles in the path
-- `total_cost`: length × cost_per_tile
-- `average_speed_multiplier`: weighted speed across path
-- `cost_per_tile`: average cost efficiency
-
 ### BeltPath Metrics
 
 Each routed conveyor belt path has:
@@ -88,14 +68,6 @@ The complete conveyor belt network provides:
 - `average_travel_time`: Mean travel time across paths
 - `bottleneck_capacity`: Minimum capacity in the network
 - `total_cost`: Sum of all individual path costs
-
-### GroundBeltNetwork Metrics
-
-The complete ground belt network provides:
-- `total_length`: Sum of all ground belt tile counts
-- `total_cost`: Sum of all construction costs
-- `average_speed_multiplier`: Weighted average movement speed bonus
-- `cost_per_tile`: Average construction cost per tile
 
 ### UndergroundBeltNetwork Metrics
 
@@ -236,54 +208,6 @@ BeltNetwork(paths)
   .summary() -> str
 ```
 
-### GroundBeltType
-
-```python
-GroundBeltType.STONE
-GroundBeltType.CONCRETE
-GroundBeltType.REFINED_CONCRETE
-GroundBeltType.HAZARD_CONCRETE
-
-# Properties
-  .speed_multiplier -> float
-  .cost_per_tile -> int
-  .maximum_cross_tile -> int
-```
-
-### GroundBelt
-
-```python
-GroundBelt(position, material=GroundBeltType.STONE)
-  .position -> Point
-  .material -> GroundBeltType
-  .cost -> int
-  .speed_boost -> float
-  .maximum_cross_tile -> int
-  .describe() -> str
-```
-
-### GroundBeltPath
-
-```python
-GroundBeltPath(source, target, path, material=GroundBeltType.STONE)
-  .length -> int
-  .total_cost -> int
-  .average_speed_multiplier -> float
-  .maximum_cross_tile -> int
-  .describe() -> str
-```
-
-### GroundBeltNetwork
-
-```python
-GroundBeltNetwork(paths)
-  .total_length -> int
-  .total_cost -> int
-  .average_speed_multiplier -> float
-  .cost_per_tile -> float
-  .summary() -> str
-```
-
 ### UndergroundBeltType
 
 ```python
@@ -385,7 +309,6 @@ LabCluster(labs)
 
 - ✅ Multi-belt-type support (yellow, red, blue)
 - ✅ Underground belt routing with distance validation
-- ✅ Ground belt materials with movement bonuses
 - ✅ Research labs (standard and biolab) with efficiency modeling
 - ✅ A* pathfinding with manhattan distance heuristic
 - ✅ Automatic path cost calculation with turn penalties

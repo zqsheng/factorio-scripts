@@ -21,7 +21,7 @@ def main() -> None:
     optimizer.add_link((1, 8), (18, 9), "input-3", BeltType.BLUE)
     # place a standard lab and a biolab as obstacles
     optimizer.add_lab((10, 6), LabType.STANDARD)
-    optimizer.add_lab((14, 9), LabType.BIOLAB)
+    optimizer.add_lab((21, 9), LabType.BIOLAB)
 
     network = optimizer.optimize()
     print(optimizer.render(network))
