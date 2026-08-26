@@ -13,24 +13,26 @@ pip3 install torch torchvision matplotlib numpy opencv-python
 
 ## Part 1: 基础教程 / Tutorials
 
-| # | File | Topic | Key Concepts |
-|---|------|-------|-------------|
-| 1 | `01_tensors.py` | Tensors 基础 | 创建、索引、reshape、dtype、device |
-| 2 | `02_autograd.py` | 自动微分 | `requires_grad`, `backward()`, 计算图 |
-| 3 | `03_linear_regression.py` | 线性回归 | 手写训练循环、loss、optimizer |
-| 4 | `04_nn_module.py` | nn.Module | 构建神经网络、Sequential、自定义层 |
-| 5 | `05_classification.py` | 分类任务 | CrossEntropy、Softmax、accuracy |
-| 6 | `06_cnn_mnist.py` | CNN 图像分类 | Conv2d、池化、MNIST 手写数字识别 |
-| 7 | `07_save_load.py` | 模型保存与加载 | state_dict、checkpoint |
+| #   | File                      | Topic          | Key Concepts                          |
+| --- | ------------------------- | -------------- | ------------------------------------- |
+| 1   | `01_tensors.py`           | Tensors 基础   | 创建、索引、reshape、dtype、device    |
+| 2   | `02_autograd.py`          | 自动微分       | `requires_grad`, `backward()`, 计算图 |
+| 3   | `03_linear_regression.py` | 线性回归       | 手写训练循环、loss、optimizer         |
+| 4   | `04_nn_module.py`         | nn.Module      | 构建神经网络、Sequential、自定义层    |
+| 5   | `05_classification.py`    | 分类任务       | CrossEntropy、Softmax、accuracy       |
+| 6   | `06_cnn_mnist.py`         | CNN 图像分类   | Conv2d、池化、MNIST 手写数字识别      |
+| 7   | `07_save_load.py`         | 模型保存与加载 | state_dict、checkpoint                |
+| 9   | `09_rnn_demo.py`          | RNN 序列建模   | `nn.RNN`、时序输入、二分类任务        |
+| 10  | `10_forget_gate_demo.py`  | LSTM 遗忘门    | 手写门控、cell state、记忆/重置任务    |
 
 ---
 
 ## Part 2: 实战项目 — 目标检测 / Object Detection Project
 
-| File | Description | Key Concepts |
-|------|------------|-------------|
-| `detect_image.py` | 📷 图片检测 | 预训练 Faster R-CNN, 80 类 COCO 物体 |
-| `detect_video.py` | 🎬 视频检测 | 逐帧推理, 跳帧加速, 类别过滤 |
+| File                   | Description | Key Concepts                         |
+| ---------------------- | ----------- | ------------------------------------ |
+| `detect_image.py`      | 📷 图片检测 | 预训练 Faster R-CNN, 80 类 COCO 物体 |
+| `detect_video.py`      | 🎬 视频检测 | 逐帧推理, 跳帧加速, 类别过滤         |
 | `finetune_detector.py` | 🎯 微调训练 | 迁移学习, 自定义 Dataset, 替换分类头 |
 
 ### Quick Start

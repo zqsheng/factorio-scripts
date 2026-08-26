@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:flowable="http://flowable.org/bpmn"
+        xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+        xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+        xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+        targetNamespace="http://example.com/task-orchestration">
+
+    <process id="task_orchestration_flow"
+             name="Task Orchestration Flow"
+             isExecutable="true">
+
+        <!-- Start -->
+        <startEvent id="startEvent" name="Start"/>
+
+        <sequenceFlow id="flow_start_load"
+                      sourceRef="startEvent"
+                      targetRef="loadTaskContext"/>
+
+        <!-- Load Context -->
+        <serviceTask id="loadTaskContext"
+                     name="Load Task Context"
+                     flowable:delegateExpression="${loadTaskContextDelegate}"/>
+
+        <sequenceFlow id="flow_load_http"
+                      sourceRef="loadTaskContext"
+                      targetRef="httpHealthCheck"/>
+
+        <!-- HTTP Check -->
+        <serviceTask id="httpHealthCheck"
+                     name="HTTP Health Check"
+                     flowable:delegateExpression="${httpHealthCheckDelegate}"/>
+
+        <sequenceFlow id="flow_http_gateway"
+                      sourceRef="httpHealthCheck"
+                      targetRef="httpCheckGateway"/>
+
+        <!-- HTTP Result Gateway -->
+        <exclusiveGateway id="httpCheckGateway"
+                          name="HTTP Check OK?"/>
+
+        <sequenceFlow id="flow_http_ok"
+                      sourceRef="httpCheckGateway"
+                      targetRef="openLongConnection">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${httpCheckOk == true}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <sequenceFlow id="flow_http_fail"
+                      sourceRef="httpCheckGateway"
+                      targetRef="handleFailure">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${httpCheckOk == false}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <!-- Long Connection / WebSocket -->
+        <serviceTask id="openLongConnection"
+                     name="Open WebSocket Connection"
+                     flowable:delegateExpression="${openWebSocketDelegate}"/>
+
+        <sequenceFlow id="flow_ws_gateway"
+                      sourceRef="openLongConnection"
+                      targetRef="webSocketGateway"/>
+
+        <!-- WebSocket Result Gateway -->
+        <exclusiveGateway id="webSocketGateway"
+                          name="WebSocket Connected?"/>
+
+        <sequenceFlow id="flow_ws_ok"
+                      sourceRef="webSocketGateway"
+                      targetRef="waitForResult">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${webSocketConnected == true}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <sequenceFlow id="flow_ws_fail"
+                      sourceRef="webSocketGateway"
+                      targetRef="handleFailure">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${webSocketConnected == false}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <!-- Wait State -->
+        <receiveTask id="waitForResult"
+                     name="Wait For Callback Result"/>
+
+        <!-- Boundary timeout on wait task -->
+        <boundaryEvent id="waitTimeoutEvent"
+                       name="Wait Timeout"
+                       attachedToRef="waitForResult"
+                       cancelActivity="true">
+            <timerEventDefinition>
+                <timeDuration>PT60S</timeDuration>
+            </timerEventDefinition>
+        </boundaryEvent>
+
+        <sequenceFlow id="flow_wait_success"
+                      sourceRef="waitForResult"
+                      targetRef="processResult"/>
+
+        <sequenceFlow id="flow_wait_timeout"
+                      sourceRef="waitTimeoutEvent"
+                      targetRef="handleTimeout"/>
+
+        <!-- Process Result -->
+        <serviceTask id="processResult"
+                     name="Process Result"
+                     flowable:delegateExpression="${processResultDelegate}"/>
+
+        <sequenceFlow id="flow_result_success"
+                      sourceRef="processResult"
+                      targetRef="successEnd"/>
+
+        <!-- Timeout Handler -->
+        <serviceTask id="handleTimeout"
+                     name="Handle Timeout"
+                     flowable:delegateExpression="${handleTimeoutDelegate}"/>
+
+        <sequenceFlow id="flow_timeout_retry_gateway"
+                      sourceRef="handleTimeout"
+                      targetRef="retryGateway"/>
+
+        <!-- Failure Handler -->
+        <serviceTask id="handleFailure"
+                     name="Handle Failure"
+                     flowable:delegateExpression="${handleFailureDelegate}"/>
+
+        <sequenceFlow id="flow_failure_retry_gateway"
+                      sourceRef="handleFailure"
+                      targetRef="retryGateway"/>
+
+        <!-- Retry Gateway -->
+        <exclusiveGateway id="retryGateway"
+                          name="Need Retry?"/>
+
+        <sequenceFlow id="flow_need_retry"
+                      sourceRef="retryGateway"
+                      targetRef="retryDelay">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${needRetry == true}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <sequenceFlow id="flow_no_retry"
+                      sourceRef="retryGateway"
+                      targetRef="failedEnd">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[${needRetry == false}]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <!-- Retry Delay -->
+        <intermediateCatchEvent id="retryDelay"
+                                name="Retry Delay">
+            <timerEventDefinition>
+                <timeDuration>PT30S</timeDuration>
+            </timerEventDefinition>
+        </intermediateCatchEvent>
+
+        <sequenceFlow id="flow_retry_http"
+                      sourceRef="retryDelay"
+                      targetRef="httpHealthCheck"/>
+
+        <!-- End Events -->
+        <endEvent id="successEnd" name="Success"/>
+
+        <endEvent id="failedEnd" name="Failed"/>
+
+    </process>
+</definitions>
