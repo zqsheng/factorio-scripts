@@ -82,3 +82,26 @@
 - bucket, top-level container
 - object, file plus metadata
 - key, unique object name/path inside the bucket
+
+## LangChain demo
+
+The `demo-langchain/langchain-demo.py` script sends a question to an OpenAI chat model through
+LangChain. Install the provider integration and configure an API key:
+
+```zsh
+/Users/zhangqishang/factorio-scripts/.venv/bin/python -m pip install -U langchain-openai
+export OPENAI_API_KEY="your-openai-api-key"
+/Users/zhangqishang/factorio-scripts/.venv/bin/python demo-langchain/langchain-demo.py "What is a LangChain runnable?"
+```
+
+## LangGraph demo
+
+The `demo-langgraph/langgraph-demo.py` script runs a question through a minimal
+LangGraph state graph using DeepSeek V4 Flash by default:
+
+```zsh
+export DEEPSEEK_API_KEY="your-deepseek-api-key"
+/Users/zhangqishang/factorio-scripts/.venv/bin/python demo-langgraph/langgraph-demo.py "What is a graph state?"
+```
+
+Override the model with `LANGGRAPH_MODEL` or `--model` when needed.
