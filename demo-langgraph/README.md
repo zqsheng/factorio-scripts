@@ -27,6 +27,47 @@ This demo follows that flow:
 The graph structure is explicit, so additional nodes and branches can be added
 without changing the model-call interface.
 
+## Basic concepts
+
+LangGraph is used to build stateful, looping, tool-using AI workflows.
+
+- **State** is the shared data carried through the workflow. This demo uses
+  `MessagesState`, which stores the conversation messages.
+- **Node** is a function that performs work. The `chat` node calls the model and
+  the `tools` node executes requested local tools.
+- **Edge** connects nodes and defines the normal execution order.
+- **Conditional edge** chooses the next node from the current state. Here,
+  `tools_condition` checks whether the model requested a tool call.
+- **Checkpoint** persists state so a workflow can be resumed later. This demo
+  uses `SqliteSaver` and a `thread_id` session identifier.
+- **ToolNode** runs model-requested tools and adds their results back to the
+  message state.
+
+Compared with a single LangChain model call, LangGraph is useful for multi-step
+agents, tool-call loops, conditional branches, long-running tasks, resumable
+conversations, and human-in-the-loop workflows.
+
+## Core work loop
+
+The central loop in this demo is:
+
+```mermaid
+flowchart TD
+    Start([START]) --> State[MessagesState]
+    State --> Chat[chat node\nCall DeepSeek model]
+    Chat --> Decision{Tool call requested?}
+    Decision -->|No| End([END])
+    Decision -->|Yes| Tools[tools node\nRun local tool]
+    Tools --> State
+    State -. checkpoint by thread_id .-> Checkpoint[(SQLite checkpoint)]
+```
+
+The model can answer directly and finish, or request `search_factorio_files`.
+After the tool runs, its result is added to the message state and sent back to
+the model. The loop continues until the model returns a final answer without a
+tool call. The checkpoint lets a later invocation with the same `thread_id`
+continue the conversation.
+
 ## Current capabilities
 
 This example supports:
@@ -40,7 +81,7 @@ This example supports:
 - DeepSeek's OpenAI-compatible API through `ChatOpenAI`.
 - Model selection with `--model` or `LANGGRAPH_MODEL`.
 - Deterministic generation with `temperature=0`.
-- A default question when no argument is provided.
+- Interactive input/output mode when no question argument is provided.
 
 It intentionally does not yet include remote MCP servers, human approval, streaming,
 retries, or a remote checkpoint store.
@@ -86,12 +127,12 @@ Configure a DeepSeek API key and use the workspace virtual environment:
 ```zsh
 export DEEPSEEK_API_KEY="your-deepseek-api-key"
 /Users/zhangqishang/factorio-scripts/.venv/bin/python \
-  demo-langgraph/langgraph-demo.py \
-  --session-id factory-help \
-  "What is a graph state?"
+  demo-langgraph/langgraph-demo.py --session-id factory-help
 ```
 
-Run the command again with the same `--session-id` to recover the conversation:
+The command starts an interactive input/output loop. Enter a question after the
+`You:` prompt; type `exit` or `quit` to leave. The same `--session-id` resumes
+the conversation across separate launches:
 
 ```zsh
 /Users/zhangqishang/factorio-scripts/.venv/bin/python \
@@ -100,9 +141,21 @@ Run the command again with the same `--session-id` to recover the conversation:
   "How does it differ from a normal variable?"
 ```
 
+To make a single request without entering interactive mode, pass the question
+as the positional argument:
+
+```zsh
+/Users/zhangqishang/factorio-scripts/.venv/bin/python \
+  demo-langgraph/langgraph-demo.py \
+  --session-id factory-help \
+  "What is a graph state?"
+```
+
 Checkpoints are stored in `demo-langgraph/checkpoints.db` by default. Use
 `LANGGRAPH_CHECKPOINT_DB` or `--db` to choose another SQLite file. Use a new
-session ID to start a separate conversation.
+session ID to start a separate conversation. If a process is interrupted while
+a tool call is being written, the next run detects the incomplete tool history,
+clears that thread's messages, and starts again with the current question.
 
 The default model is `deepseek-v4-flash`. Override it with either option:
 
