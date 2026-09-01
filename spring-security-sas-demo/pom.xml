@@ -11,9 +11,9 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>spring-security-sas-demo</artifactId>
+    <artifactId>demo-spring-security-sas</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spring-security-sas-demo</name>
+    <name>demo-spring-security-sas</name>
     <description>Spring Authorization Server demo</description>
 
     <properties>
