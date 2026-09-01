@@ -5,7 +5,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, RemoveMessage, SystemMessage
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -61,13 +61,47 @@ def build_graph(model_name: str, checkpointer: SqliteSaver):
     return graph.compile(checkpointer=checkpointer)
 
 
+def has_incomplete_tool_call_history(messages) -> bool:
+    """Return whether an assistant tool call is not immediately answered."""
+    for index, message in enumerate(messages):
+        tool_calls = getattr(message, "tool_calls", None)
+        if not tool_calls:
+            continue
+
+        expected_ids = {call["id"] for call in tool_calls}
+        following_messages = messages[index + 1 : index + 1 + len(expected_ids)]
+        actual_ids = {
+            getattr(response, "tool_call_id", None) for response in following_messages
+        }
+        if actual_ids != expected_ids:
+            return True
+
+    return False
+
+
+def invoke_question(graph, config, skill: str, question: str) -> str:
+    existing_state = graph.get_state(config)
+    existing_messages = existing_state.values.get("messages", [])
+    messages = [HumanMessage(content=question)]
+    if has_incomplete_tool_call_history(existing_messages):
+        messages = [
+            *(RemoveMessage(id=message.id) for message in existing_messages),
+            SystemMessage(content=skill),
+            HumanMessage(content=question),
+        ]
+    elif not existing_messages:
+        messages.insert(0, SystemMessage(content=skill))
+
+    result = graph.invoke({"messages": messages}, config=config)
+    return result["messages"][-1].content
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run a question through LangGraph.")
     parser.add_argument(
         "question",
         nargs="?",
-        default="Explain LangGraph in one short paragraph.",
-        help="The question to send to the model.",
+        help="The question to send to the model; omit it for interactive mode.",
     )
     parser.add_argument(
         "--model",
@@ -99,15 +133,23 @@ def main() -> None:
         checkpointer.setup()
         graph = build_graph(args.model, checkpointer)
         config = {"configurable": {"thread_id": args.session_id}}
-        existing_state = graph.get_state(config)
-        messages = [HumanMessage(content=args.question)]
-        if not existing_state.values.get("messages"):
-            messages.insert(0, SystemMessage(content=skill))
-        result = graph.invoke(
-            {"messages": messages},
-            config=config,
-        )
-        print(result["messages"][-1].content)
+        if args.question:
+            print(invoke_question(graph, config, skill, args.question))
+            return
+
+        print("Interactive mode. Type 'exit' or 'quit' to leave.")
+        while True:
+            try:
+                question = input("You: ").strip()
+            except EOFError:
+                print()
+                break
+            if question.lower() in {"exit", "quit"}:
+                break
+            if not question:
+                continue
+
+            print(f"Assistant: {invoke_question(graph, config, skill, question)}")
 
 
 if __name__ == "__main__":
