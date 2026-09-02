@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable, List, Optional
+from collections.abc import Iterable
 
 try:
     from .grid import Grid, Point, a_star, manhattan
@@ -14,13 +14,13 @@ except ImportError:
 
 class LayoutOptimizer:
     def __init__(
-        self, width: int, height: int, obstacles: Optional[Iterable[Point]] = None
+        self, width: int, height: int, obstacles: Iterable[Point] | None = None
     ):
         self.grid = Grid(width, height, obstacles)
-        self.links: List[Link] = []
-        self.labs: List[Lab] = []
+        self.links: list[Link] = []
+        self.labs: list[Lab] = []
 
-    def _is_footprint_free(self, footprint: List[Point]) -> bool:
+    def _is_footprint_free(self, footprint: list[Point]) -> bool:
         for p in footprint:
             if not self.grid.contains(p):
                 return False
@@ -32,9 +32,9 @@ class LayoutOptimizer:
         self,
         desired_pos: Point,
         lab_type: LabType = LabType.STANDARD,
-        dimensions: Optional[Tuple[int, int]] = None,
+        dimensions: tuple[int, int] | None = None,
         max_search_radius: int = 10,
-    ) -> Optional[Point]:
+    ) -> Point | None:
         """Search nearby positions for a free top-left placement for a lab footprint.
 
         Returns the first free position found within `max_search_radius`, or None.
@@ -103,7 +103,7 @@ class LayoutOptimizer:
         ordered_links = sorted(
             self.links, key=lambda link: manhattan(link.source, link.target)
         )
-        paths: List[BeltPath] = []
+        paths: list[BeltPath] = []
 
         for link in ordered_links:
             temp_grid = Grid(self.grid.width, self.grid.height, self.grid.obstacles)
